@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 where = ["src"]
 
 [tool.setuptools.package-data]
-godocs = ["constructor/jinja_constructor/models/**/*.jinja"]
+godocs_jinja = ["constructor/jinja_constructor/models/**/*.jinja"]
 
 [project]
 name = "godocs-jinja"
@@ -14,7 +14,7 @@ version = "0.1.0"
 authors = [
   { name="Daniel Sousa (nadjiel)", email="oliveira.daaaaniel@gmail.com" },
 ]
-description = "CLI tool for converting Godot's XML docs into RST Markdown"
+description = "Jinja implementation of constructor for Godocs CLI"
 keywords=[ "python", "godot", "documentation", "docs", "godocs", "sphinx", "jinja2" ]
 readme = "README.md"
 license = "MIT"
@@ -27,12 +27,12 @@ classifiers = [
   "Natural Language :: English",
 ]
 dependencies = [
-  "godocs", 
+  #"godocs", 
   "jinja2 >= 3.1.6, < 4.0.0",
 ]
 
 [project.entry-points."godocs.plugins"]
-jinja = "godocs-jinja.main:Plugin"
+jinja = "godocs_jinja.main:Plugin"
 
 [project.optional-dependencies]
 dev = [
