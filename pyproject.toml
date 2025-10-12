@@ -32,7 +32,7 @@ dependencies = [
 ]
 
 [project.entry-points."godocs.plugins"]
-jinja = "godocs_jinja.main:Plugin"
+jinja = "godocs_jinja.main:JinjaPlugin"
 
 [project.optional-dependencies]
 dev = [
