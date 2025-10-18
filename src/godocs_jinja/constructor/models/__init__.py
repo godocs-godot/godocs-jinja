@@ -1,1 +1,3 @@
-from . import rst  # type: ignore
+from . import rst
+
+__all__ = ["rst"]
