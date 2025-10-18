@@ -179,7 +179,7 @@ class JinjaConstructor(Constructor):
         model: str | PathLike[str] | None = None,
         templates_path: str | PathLike[str] | None = None,
         filters_path: str | PathLike[str] | None = None,
-        builders: dict[str, Builder] | None = None,
+        builders_path: str | PathLike[str] | None = None,
         output_format: str = DEFAULT_FORMAT,
     ):
         """
@@ -238,13 +238,15 @@ class JinjaConstructor(Constructor):
 
         self.filters = self.load_filters(Path(filters_path))
 
-        if builders is None:
-            builders = {
+        # builders are either got from the builders_path or set
+        # to the default builders
+        if builders_path is not None:
+            self.builders = dict(self.load_builders(Path(builders_path)))
+        else:
+            self.builders = {
                 "class": JinjaConstructor.build_class_templates,
                 "index": JinjaConstructor.build_index_template,
             }
-
-        self.builders = builders
 
         self.env = Environment(
             loader=FileSystemLoader(self.templates_path),
@@ -358,6 +360,23 @@ class JinjaConstructor(Constructor):
             return []
 
         mod = module.load("filters", path)
+
+        return module.get_functions(mod)
+
+    def load_builders(self, path: Path) -> list[tuple[str, Builder]]:
+        """
+        **Loads** the **functions** from a **script** in the `path` and returns them
+        as a `list` of `tuples` with **name-function pairs**, so that they can
+        be used as **builders**.
+
+        Returns:
+            list[tuple[str, Builder]]: **Builders** from **script** in the `path`.
+        """
+
+        if not path.exists():
+            return []
+
+        mod = module.load("builders", path)
 
         return module.get_functions(mod)
 
