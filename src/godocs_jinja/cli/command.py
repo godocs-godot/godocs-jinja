@@ -1,5 +1,5 @@
 from argparse import ArgumentParser, Namespace
-from typing import Any, cast
+from typing import cast, TYPE_CHECKING, Optional
 from godocs.cli.command import CLICommand
 from godocs.parser import xml_parser, context_creator
 from godocs.parser.context_creator import DocContext
@@ -7,6 +7,9 @@ from godocs.translation.interpreter import Interpreter, BBCodeInterpreter
 from godocs.translation.translator import get_translator, SyntaxTranslator
 from godocs_jinja.constructor import JinjaConstructor
 from godocs.constructor.constructor import ConstructorContext
+
+if TYPE_CHECKING:
+    from argparse import _SubParsersAction  # type: ignore
 
 
 class JinjaCommand(CLICommand):
@@ -23,6 +26,11 @@ class JinjaCommand(CLICommand):
     parser: ArgumentParser
     """
     The `argparse.ArgumentParser` instance this `JinjaCommand` uses.
+    """
+
+    subparsers: "_SubParsersAction[ArgumentParser]"
+    """
+    The `subparsers` of the `parser` of this `AppCommand`.
     """
 
     # TODO: move to dedicated place, and organize better
@@ -75,7 +83,45 @@ class JinjaCommand(CLICommand):
 
         return ctx
 
-    def exec(self, args: Namespace):
+    def register(
+        self,
+        superparsers: "Optional[_SubParsersAction[ArgumentParser]]" = None,
+        parent_parser: Optional[ArgumentParser] = None,
+    ):
+        """
+        Registers this `JinjaCommand` as a subparser for the
+        `subparsers` received.
+        """
+
+        if superparsers is None:
+            raise ValueError('superparsers is needed for "jinja" registration')
+        if parent_parser is None:
+            raise ValueError(
+                'parent_parser is needed for "jinja" registration')
+
+        self.parser: ArgumentParser = superparsers.add_parser(
+            "jinja", help="Construct docs using the Jinja constructor.", parents=[parent_parser])
+
+        self.parser.add_argument(
+            "-m", "--model",
+            default="rst",
+            help=f"Which model to use. Can be one of {JinjaCommand.MODELS} or a path to a model directory."
+        )
+        self.parser.add_argument(
+            "-T", "--templates",
+            help="Path to directory with Jinja templates."
+        )
+        self.parser.add_argument(
+            "-F", "--filters",
+            help="Path to script with Jinja filter functions."
+        )
+        self.parser.add_argument(
+            "-B", "--builders",
+            help="Path to script with builders dict."
+        )
+        self.parser.set_defaults(execute=self.execute)
+
+    def execute(self, args: Namespace):
         """
         Executes the main logic of this command with the parsed `args`.
         """
@@ -99,34 +145,3 @@ class JinjaCommand(CLICommand):
         )
 
         constructor.construct(cast(ConstructorContext, ctx), args.output_dir)
-
-    def register(self, subparsers: Any | None = None, parent: ArgumentParser | None = None):
-        """
-        Registers this `JinjaCommand` as a subparser for the
-        `subparsers` received.
-        """
-
-        if subparsers is None:
-            raise ValueError('subparsers is needed for "jinja" resistration')
-
-        self.parser: ArgumentParser = subparsers.add_parser(
-            "jinja", help="Construct docs using the Jinja constructor.", parents=[parent])
-
-        self.parser.add_argument(
-            "-m", "--model",
-            default="rst",
-            help=f"Which model to use. Can be one of {JinjaCommand.MODELS} or a path to a model directory."
-        )
-        self.parser.add_argument(
-            "-T", "--templates",
-            help="Path to directory with Jinja templates."
-        )
-        self.parser.add_argument(
-            "-F", "--filters",
-            help="Path to script with Jinja filter functions."
-        )
-        self.parser.add_argument(
-            "-B", "--builders",
-            help="Path to script with builders dict."
-        )
-        self.parser.set_defaults(func=self.exec)
