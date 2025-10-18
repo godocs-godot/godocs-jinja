@@ -78,8 +78,8 @@ class JinjaCommand(CLICommand):
             model=args.model,
             templates_path=args.templates,
             filters_path=args.filters,
-            # TODO: add builders path as option, so it can be passed here
-            output_format="rst",  # TODO: make format customizable
+            builders_path=args.builders,
+            output_format=args.format,
         )
 
         constructor.construct(
