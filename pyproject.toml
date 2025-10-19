@@ -6,11 +6,11 @@ build-backend = "setuptools.build_meta"
 where = ["src"]
 
 [tool.setuptools.package-data]
-godocs_jinja = ["constructor/jinja_constructor/models/**/*.jinja"]
+godocs_jinja = ["py.typed", "constructor/jinja_constructor/models/**/*.jinja"]
 
 [project]
 name = "godocs-jinja"
-version = "0.1.0"
+version = "0.1.1"
 authors = [
   { name="Daniel Sousa (nadjiel)", email="oliveira.daaaaniel@gmail.com" },
 ]
@@ -44,5 +44,5 @@ peer = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/godocs-godot/godocs"
-Issues = "https://github.com/godocs-godot/godocs/issues"
+Homepage = "https://github.com/godocs-godot/godocs-jinja"
+Issues = "https://github.com/godocs-godot/godocs-jinja/issues"
