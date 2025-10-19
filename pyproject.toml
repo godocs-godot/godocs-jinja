@@ -27,7 +27,6 @@ classifiers = [
   "Natural Language :: English",
 ]
 dependencies = [
-  #"godocs", 
   "jinja2 >= 3.1.6, < 4.0.0",
 ]
 
@@ -39,6 +38,9 @@ dev = [
   "build",
   "twine",
   "pytest >= 8.4.1, < 9.0.0",
+]
+peer = [
+  "godocs >= 0.0.1, < 1.0.0",
 ]
 
 [project.urls]
